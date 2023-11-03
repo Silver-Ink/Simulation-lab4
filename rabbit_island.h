@@ -1,4 +1,6 @@
 #ifndef RABBIT
+#include "mt19937ar.h"
+
 #define RABBIT
 
 #define MAX_NB_MOIS 12*20

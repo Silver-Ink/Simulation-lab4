@@ -4,7 +4,7 @@
 
 int main()
 {
-
+    genrand_real1();
     return 0;
 }
 
@@ -73,3 +73,7 @@ int mois_suivant(simu* s)
 
 }
 
+int veillir_lapin(int age)
+{
+    // genrand_real1()
+}
