@@ -35,7 +35,7 @@ typedef struct simu
 
 } simu;
 
-void init_simu(simu* s);
+void init_simu(simu* s, int nb_femelle, int nb_male, int nb_enfant);
 
 
 #endif
