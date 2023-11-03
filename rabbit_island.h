@@ -5,7 +5,11 @@
 #define MIN_MATURITE_SEXUELLE 5
 #define MAX_MATURITE_SEXUELLE 8
 
+#define MAX_AGE_ADULTE MAX_AGE - MIN_MATURITE_SEXUELLE
 #define MAX_AGE 12*15
+
+#define MIN_PORTE_PAR_AN 4
+#define MAX_PORTE_PAR_AN 8
 
 // Probabilités
 #define PORBA_SURVIE_ENFANT 35 
@@ -26,8 +30,8 @@ typedef struct simu
     // lapins ne pouvant pas encore se reproduire, leur sexe est choisis au passage adulte
     int lapin_enfant[MAX_MATURITE_SEXUELLE];
 
-    int lapin_femelle[MAX_AGE - MIN_MATURITE_SEXUELLE];
-    int lapin_male[MAX_AGE - MIN_MATURITE_SEXUELLE];
+    int lapin_femelle[MAX_AGE_ADULTE];
+    int lapin_male[MAX_AGE_ADULTE];
 
     // l'index indique dans combien de moi le lapin naitra
     // à l'index 0 se trouve les lapereaux naissant au mois suivant
