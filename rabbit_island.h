@@ -40,6 +40,8 @@ typedef struct simu
 } simu;
 
 void init_simu(simu* s, int nb_femelle, int nb_male, int nb_enfant);
+int mois_suivant(simu* s);
+int veillir_lapin(int age);
 
 
 #endif

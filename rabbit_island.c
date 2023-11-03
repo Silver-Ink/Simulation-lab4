@@ -33,3 +33,43 @@ void init_simu(simu* s, int nb_femelle, int nb_male, int nb_enfant)
     s->lapin_male[0] = nb_male;
 }
 
+int mois_suivant(simu* s)
+{
+
+    // Si au moins un lapin ancore vivant
+    if (s->total_lapin_vivant)
+    {
+        // Mois de l'année en cours
+        int mois = s->temps % 12;
+
+        // Lapin adultes veillissent, en premier, sinon les nouvelles femelles vont veillir 2 fois.
+        for (int i = MAX_AGE_ADULTE - 1; i > 0; i--)
+        {
+            int age = i + 5;
+            s->lapin_femelle[i] = s->lapin_femelle[i-1];
+            s->lapin_male[i]    = s->lapin_male[i-1];
+        }
+        
+
+        // Lapin enfants veillissent
+
+
+
+        // Rectification du planning des naissances 
+
+        // Naissance des lapereaux du mois précédent
+
+        // Lapin adultes procréent
+
+
+        s->temps++;
+        return 1;
+    }
+    else
+    { 
+        s->temps++;
+        return 0; 
+    }
+
+}
+
