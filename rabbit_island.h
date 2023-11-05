@@ -32,9 +32,10 @@ typedef struct simu
     int temps;
 
     int total_lapin_vivant;
-    int total_lapin_cumul;
+    long total_lapin_cumul;
     int nb_femelle;
     int nb_male;
+    int nb_enfant;
     int nb_porte_mois_suivant;
 
 

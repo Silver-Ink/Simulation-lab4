@@ -29,6 +29,7 @@ void init_simu(simu* s, int nb_femelle, int nb_male, int nb_enfant)
         s->lapin_enfant[i] = 0;
     }
     s->lapin_enfant[0] = nb_enfant;
+    s->nb_enfant = nb_enfant;
     
 
     for (int i = 0; i < MAX_AGE_ADULTE; i++)
@@ -37,7 +38,10 @@ void init_simu(simu* s, int nb_femelle, int nb_male, int nb_enfant)
         s->lapin_male[i] = 0;
     }
     s->lapin_femelle[0] = nb_femelle;
+    s->nb_femelle = nb_femelle;
+
     s->lapin_male[0] = nb_male;
+    s->nb_male = nb_male;
 }
 
 int mois_suivant(simu* s)
@@ -52,19 +56,37 @@ int mois_suivant(simu* s)
         // Lapin adultes veillissent, en premier, sinon les nouvelles femelles vont veillir 2 fois.
         for (int i = MAX_AGE_ADULTE - 1; i > 0; i--)
         {
+            // MAJ des compteurs
+            s->total_lapin_vivant -= s->lapin_femelle[i-1];
+            s->nb_femelle         -= s->lapin_femelle[i-1];
+
+            s->total_lapin_vivant -=    s->lapin_male[i-1];
+            s->nb_male            -=    s->lapin_male[i-1];
+
             int f = 0;
             int m = 0;
             for (int j = 0; j < s->lapin_femelle[i-1]; j++)
             {
                 f += veillir_lapin(age_adulte(i));
             }
-            for (int j = 0; j < s->lapin_male[i-1]; j++)
+            for (int j = 0; j < s->lapin_male   [i-1]; j++)
             {
                 m += veillir_lapin(age_adulte(i));
             }
             
             s->lapin_femelle[i] = f;
-            s->lapin_male[i]    = m;
+            s->lapin_male   [i] = m;
+
+            
+            // MAJ des compteurs
+            s->total_lapin_vivant += f;
+            s->nb_femelle         += f;
+
+            s->total_lapin_vivant += m;
+            s->nb_male            += m;
+
+            s->total_lapin_cumul  += f;
+            s->total_lapin_cumul  += m;
         }
         
 
