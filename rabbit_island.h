@@ -7,11 +7,16 @@
 #include <math.h>
 #include "mt19937ar.h"
 
+#define PI_2 2*3.1415926
+
 // Probabilités
 #define PROBA_PAR_MOIS_ANCIENNETE (PROBA_SURVIE_ADULTE / ((double)(MAX_AGE - MIN_AGE_ANCIEN)))
-#define PROBA_SURVIE_ENFANT 0.9162324528
-#define PROBA_SURVIE_ADULTE 0.9583245286
+#define PROBA_SURVIE_ENFANT 0.9162324528   //Proba de survie par mois
+#define PROBA_SURVIE_ADULTE 0.9583245286   //Proba de survie par mois
 #define PROBA_NAISSANCE 1.
+#define ECART_TYPE 6.
+
+#define MAX_SIMU_COMPLETE 100
 
 double proba_reproduction_par_mois[12] = 
 //{ .6 , .6 , .6 , .6 , .6 , .6 , .6 , .6 , .6 , .6 , .6 , .6 };
@@ -37,18 +42,17 @@ typedef struct simu
     // méta données
     int temps;
 
-    int total_lapin_vivant;
-    int nb_femelle;
-    int nb_male;
-    int nb_enfant;
-    int nb_porte_mois_suivant;
+    long long nb_femelle;
+    long long nb_male;
+    long long nb_enfant;
+    long long nb_porte_mois_suivant;
 
 
     // lapins ne pouvant pas encore se reproduire, leur sexe est choisis au passage adulte
-    int lapin_enfant[MAX_MATURITE_SEXUELLE];
+    long long lapin_enfant[MAX_MATURITE_SEXUELLE];
 
-    int lapin_femelle[MAX_AGE_ADULTE];
-    int lapin_male[MAX_AGE_ADULTE];
+    long long lapin_femelle[MAX_AGE_ADULTE];
+    long long lapin_male[MAX_AGE_ADULTE];
 
 
 
@@ -57,7 +61,9 @@ typedef struct simu
 void init_simu(simu* s, int nb_femelle, int nb_male, int nb_enfant, int nb_porte);
 int mois_suivant(simu* s);
 int veillir_lapin(int age);
+long long veillir_groupe_lapin(int age, long long nb);
 int simulation(int max_temps);
+double gen_rand_gaussienne();
 
 
 

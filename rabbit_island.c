@@ -9,9 +9,9 @@ int main(int argc, char* argv[])
         t = atoi(argv[1]);
     }
     printf("Debut : simulation pour %d mois\n", t);
-    int max = 0;
+    long long max = 0;
 
-        int s = simulation(t);
+        long long s = simulation(t);
         if (s > max){max = s;}
     printf(" MAX = %d\n", max);
 
@@ -30,7 +30,7 @@ int simulation(int max_temps)
         i++;
     }
     // print_simu(&s);
-    return s.total_lapin_vivant;
+    return s.nb_enfant + s.nb_femelle + s.nb_femelle;
 
 }
 
@@ -39,7 +39,6 @@ void init_simu(simu* s, int nb_femelle, int nb_male, int nb_enfant, int nb_porte
 {
     s->temps = 0;
 
-    s->total_lapin_vivant = nb_enfant * MAX_MATURITE_SEXUELLE + nb_femelle + nb_male;
     s->nb_porte_mois_suivant = nb_porte;
 
 
@@ -66,7 +65,7 @@ int mois_suivant(simu* s)
 {
 
     // Si au moins un lapin ancore vivant
-    if (s->total_lapin_vivant > 0)
+    if (s->nb_femelle > 0 || s->nb_enfant || s->nb_male)
     {
         // Mois de l'année en cours
         int mois = s->temps % 12;
@@ -75,21 +74,33 @@ int mois_suivant(simu* s)
         for (int i = MAX_AGE_ADULTE - 1; i > 0; i--)
         {
             // MAJ des compteurs
-            s->total_lapin_vivant -= s->lapin_femelle[i-1];
             s->nb_femelle         -= s->lapin_femelle[i-1];
-
-            s->total_lapin_vivant -=    s->lapin_male[i-1];
             s->nb_male            -=    s->lapin_male[i-1];
 
-            int f = 0;
-            int m = 0;
-            for (int j = 0; j < s->lapin_femelle[i-1]; j++)
+            long long f = 0; long long m = 0;
+
+            if (s->lapin_femelle[i-1] < MAX_SIMU_COMPLETE)
             {
-                f += veillir_lapin(age_adulte(i));
+                for (int j = 0; j < s->lapin_femelle[i-1]; j++)
+                {
+                    f += veillir_lapin(age_adulte(i));
+                }
             }
-            for (int j = 0; j < s->lapin_male   [i-1]; j++)
+            else
             {
-                m += veillir_lapin(age_adulte(i));
+                f = veillir_groupe_lapin(age_adulte(i), s->lapin_femelle[i-1]);
+            }
+
+            if (s->lapin_male   [i-1] < MAX_SIMU_COMPLETE)
+            {
+                for (int j = 0; j < s->lapin_male   [i-1]; j++)
+                {
+                    m += veillir_lapin(age_adulte(i));
+                }
+            }
+            else
+            {
+                m = veillir_groupe_lapin(age_adulte(i), s->lapin_male   [i-1]);
             }
             
             s->lapin_femelle[i] = f;
@@ -97,10 +108,8 @@ int mois_suivant(simu* s)
 
             
             // MAJ des compteurs
-            s->total_lapin_vivant += f;
             s->nb_femelle         += f;
 
-            s->total_lapin_vivant += m;
             s->nb_male            += m;
         }
         s->lapin_femelle[0] = 0;
@@ -111,11 +120,11 @@ int mois_suivant(simu* s)
         for (int i = 1; i <= INTERVALLE_MATURITE_SEXUELLE; i++)
         {
             s->nb_enfant          -= s->lapin_enfant[MAX_MATURITE_SEXUELLE - i];
-            s->total_lapin_vivant -= s->lapin_enfant[MAX_MATURITE_SEXUELLE - i];
 
-            int adulte = 0;
-            int enfant = 0;
+            long long adulte = 0;
+            long long enfant = 0;
             double proba_adulte = 1. / (double)i;
+
             for (int j = 0; j < s->lapin_enfant[MAX_MATURITE_SEXUELLE - i]; j++)
             {
                 if (veillir_lapin(MAX_MATURITE_SEXUELLE - i))
@@ -140,8 +149,8 @@ int mois_suivant(simu* s)
                 s->lapin_enfant[MAX_MATURITE_SEXUELLE - i + 1] = enfant;
             }
 
-            int femelle = 0;
-            int male    = 0;
+            long long femelle = 0;
+            long long male    = 0;
             for (int j = 0; j < adulte; j++)
             {
                 if (genrand_real1() < .5)
@@ -156,7 +165,6 @@ int mois_suivant(simu* s)
             s->nb_male    += male;
             s->nb_enfant  += enfant;
 
-            s->total_lapin_vivant += adulte + enfant;
         }
 
 
@@ -164,44 +172,55 @@ int mois_suivant(simu* s)
         for (int i = MIN_MATURITE_SEXUELLE - 1; i > 0; i--)
         {
             s->nb_enfant          -= s->lapin_enfant[i-1];
-            s->total_lapin_vivant -= s->lapin_enfant[i-1];
 
-            int enfant = 0; 
-            for (int j = 0; j < s->lapin_enfant[i-1]; j++)
+            long long enfant = 0;
+            if (s->lapin_enfant[i-1] < MAX_SIMU_COMPLETE)
             {
-                enfant += veillir_lapin(i);
+                for (int j = 0; j < s->lapin_enfant[i-1]; j++)
+                {
+                    enfant += veillir_lapin(i);
+                }
             }
-            s->lapin_enfant[i]   = enfant;
+            else
+            {
+                enfant = veillir_groupe_lapin(i, s->lapin_enfant[i-1]); 
+            }
+            s->lapin_enfant[i] = enfant;
 
-            s->nb_enfant          += enfant;
-            s->total_lapin_vivant += enfant;
+            s->nb_enfant      += enfant;
         }
         
         
         
 
         // Naissance des lapereaux du mois précédent
-        int nouveau_ne = 0;
+        long long nouveau_ne = 0;
         for (int j = 0; j < s->nb_porte_mois_suivant; j++)
         {
             nouveau_ne += genrand_int32() % 4 + 3;
         }
         s->lapin_enfant[0] = nouveau_ne;
 
-        s->total_lapin_vivant += nouveau_ne;
-        s->nb_enfant          += nouveau_ne;
+        s->nb_enfant += nouveau_ne;
 
 
         // Lapin adultes procréent
-        int nb_porte = 0;
+        long long nb_porte = 0;
         double proba_portee = proba_reproduction_par_mois[mois];
         for (int i = 0; i < MAX_AGE_ADULTE; i++)
         {
-            // Rajouter un condition sur les males
-            for (int j = 0; j < s->lapin_femelle[i]; j++)
+
+            if (s->lapin_femelle[i] < MAX_SIMU_COMPLETE)
             {
-                double random = genrand_real1();
-                nb_porte += random < proba_portee;
+                for (int j = 0; j < s->lapin_femelle[i]; j++)
+                {
+                    double random = genrand_real1();
+                    nb_porte += random < proba_portee;
+                }
+            }
+            else
+            {
+                nb_porte += ((gen_rand_gaussienne() / ECART_TYPE) + proba_portee) * s->lapin_femelle[i];
             }
         }
         s->nb_porte_mois_suivant = nb_porte;
@@ -236,6 +255,32 @@ int veillir_lapin(int age)
     }
 }
 
+double gen_rand_gaussienne()
+{
+    return cos(PI_2 * genrand_real2()) * sqrt(-log(genrand_real2()));
+}
+
+long long veillir_groupe_lapin(int age, long long nb)
+{
+    double random = gen_rand_gaussienne();
+    random /= ECART_TYPE;
+    
+
+    if (age < MIN_MATURITE_SEXUELLE)
+    {
+        return (long long)((random + PROBA_SURVIE_ENFANT) * nb);
+    }
+    else if (age < MIN_AGE_ANCIEN)
+    {
+        return (long long)((random + PROBA_SURVIE_ADULTE) * nb);
+    }
+    else
+    {
+        double age_anciennete = age - MIN_AGE_ANCIEN;
+        double proba = PROBA_SURVIE_ADULTE - age_anciennete * PROBA_PAR_MOIS_ANCIENNETE;
+        return (long long)((random + proba) * nb);
+    }
+}
 
 int veillir_lapin_test()
 {
@@ -286,7 +331,7 @@ void print_simu(simu* s)
             s->nb_porte_mois_suivant,
             s->nb_femelle,
             s->nb_male   ,
-            s->total_lapin_vivant);
+            s->nb_enfant + s->nb_femelle + s->nb_femelle);
     print_mois(mois);
     printf("  p_portee = %.2f\n", proba_reproduction_par_mois[mois]);
     
@@ -294,7 +339,7 @@ void print_simu(simu* s)
 
 void print_simu_simple(simu* s)
 {
-    printf("%3d, %12d ", s->temps, s->total_lapin_vivant);
+    printf("%3d, %12lld ", s->temps, s->nb_enfant + s->nb_femelle + s->nb_femelle);
     print_mois(s->temps);
     printf("\n");
 }
