@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <time.h>
 #include "mt19937ar.h"
 
 #define PI_2 2*3.1415926
@@ -16,7 +17,7 @@
 #define PROBA_NAISSANCE 1.
 #define ECART_TYPE 6.
 
-#define MAX_SIMU_COMPLETE 100
+#define MAX_SIMU_COMPLETE 1000
 
 double proba_reproduction_par_mois[12] = 
 //{ .6 , .6 , .6 , .6 , .6 , .6 , .6 , .6 , .6 , .6 , .6 , .6 };
@@ -35,6 +36,10 @@ double proba_reproduction_par_mois[12] =
 
 #define MIN_PORTE_PAR_AN 4
 #define MAX_PORTE_PAR_AN 8
+
+#define INTERVALLE_ENFANT_PAR_PORTE (MAX_ENFANT_PAR_PORTE - MIN_ENFANT_PAR_PORTE - 1.)
+#define MIN_ENFANT_PAR_PORTE 3.
+#define MAX_ENFANT_PAR_PORTE 7. // exclus
 
 
 typedef struct simu
@@ -59,17 +64,19 @@ typedef struct simu
 } simu;
 
 void init_simu(simu* s, int nb_femelle, int nb_male, int nb_enfant, int nb_porte);
+long long get_total_lapin(simu* s);
 int mois_suivant(simu* s);
 int veillir_lapin(int age);
 long long veillir_groupe_lapin(int age, long long nb);
-int simulation(int max_temps);
+simu simulation(int max_temps);
 double gen_rand_gaussienne();
 
 
 
 // fonctions de test
 int veillir_lapin_test();
-int nombre_de_reproduction_par_an_test(int nb_exp);
+void nombre_de_reproduction_par_an_test(int nb_exp);
+
 
 // fonctions d'affichage
 void print_simu(simu* s);
