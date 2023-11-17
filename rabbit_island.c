@@ -3,12 +3,14 @@
 
 int main(int argc, char* argv[])
 {
-    int t = 12;
+    // Permier argument, nombre de mois par simulation
+    int t = 240;
     if (argc >= 2)
     {
         t = atoi(argv[1]);
     }
 
+    // Deuxieme argument, nombre de simulations
     int nb_sim = 100;
     if (argc >= 3)
     {
@@ -17,7 +19,7 @@ int main(int argc, char* argv[])
 
     printf("Debut : simulation pour %d mois\n", t);
     simu max;
-    long long max_lapin = 0;
+    entier max_lapin = 0;
     for (int i = 0; i < nb_sim; i++)
     {
         simu s = simulation(t);
@@ -45,7 +47,7 @@ simu simulation(int max_temps)
 /// @brief calcule le nombre total de lapins vivants
 /// @param s simulation cible
 /// @return total de lapins
-long long get_total_lapin(simu* s)
+entier get_total_lapin(simu* s)
 {
     return s->nb_enfant + s->nb_femelle + s->nb_male;
 }
@@ -102,7 +104,7 @@ int mois_suivant(simu* s)
             s->nb_femelle         -= s->lapin_femelle[i-1];
             s->nb_male            -=    s->lapin_male[i-1];
 
-            long long f = 0; long long m = 0;
+            entier f = 0; entier m = 0;
 
             if (s->lapin_femelle[i-1] < MAX_SIMU_COMPLETE)
             {
@@ -146,8 +148,8 @@ int mois_suivant(simu* s)
         {
             s->nb_enfant          -= s->lapin_enfant[MAX_MATURITE_SEXUELLE - i];
 
-            long long adulte = 0;
-            long long enfant = 0;
+            entier adulte = 0;
+            entier enfant = 0;
             double proba_adulte = 1. / (double)i;
 
             if (s->lapin_enfant[MAX_MATURITE_SEXUELLE - i] < MAX_SIMU_COMPLETE)
@@ -177,7 +179,7 @@ int mois_suivant(simu* s)
                 double ratio_survivants = gen_rand_gaussienne() / ECART_TYPE + PROBA_SURVIE_ENFANT;
                 double ratio_adulte = gen_rand_gaussienne() / ECART_TYPE + proba_adulte;
 
-                long long survivants = s->lapin_enfant[MAX_MATURITE_SEXUELLE - i] * ratio_survivants;
+                entier survivants = s->lapin_enfant[MAX_MATURITE_SEXUELLE - i] * ratio_survivants;
                 adulte = survivants * ratio_adulte;
                 enfant = survivants - adulte;
             }
@@ -189,8 +191,8 @@ int mois_suivant(simu* s)
                 s->lapin_enfant[MAX_MATURITE_SEXUELLE - i + 1] = enfant;
             }
 
-            long long femelle = 0;
-            long long male    = 0;
+            entier femelle = 0;
+            entier male    = 0;
 
             if (adulte < MAX_SIMU_COMPLETE)
             {
@@ -224,7 +226,7 @@ int mois_suivant(simu* s)
         {
             s->nb_enfant          -= s->lapin_enfant[i-1];
 
-            long long enfant = 0;
+            entier enfant = 0;
             if (s->lapin_enfant[i-1] < MAX_SIMU_COMPLETE)
             {
                 for (int j = 0; j < s->lapin_enfant[i-1]; j++)
@@ -245,7 +247,7 @@ int mois_suivant(simu* s)
         
 
         // Naissance des lapereaux du mois précédent
-        long long nouveau_ne = 0;
+        entier nouveau_ne = 0;
 
         if (s->nb_porte_mois_suivant < MAX_SIMU_COMPLETE)
         {
@@ -269,7 +271,7 @@ int mois_suivant(simu* s)
 
 
         // Lapin adultes procréent
-        long long nb_porte = 0;
+        entier nb_porte = 0;
         double proba_portee = proba_reproduction_par_mois[mois];
         for (int i = 0; i < MAX_AGE_ADULTE; i++)
         {
@@ -334,7 +336,7 @@ double gen_rand_gaussienne()
 /// @param age age du groupe de lapins
 /// @param nb taille du groupe de lapin a faire veillir
 /// @return nombre de lapin aillant survécus à la veilliesse (plus pour longtemps)
-long long veillir_groupe_lapin(int age, long long nb)
+entier veillir_groupe_lapin(int age, entier nb)
 {
     double random = gen_rand_gaussienne();
     random /= ECART_TYPE;
@@ -342,17 +344,17 @@ long long veillir_groupe_lapin(int age, long long nb)
 
     if (age < MIN_MATURITE_SEXUELLE)
     {
-        return (long long)((random + PROBA_SURVIE_ENFANT) * nb);
+        return (entier)((random + PROBA_SURVIE_ENFANT) * nb);
     }
     else if (age < MIN_AGE_ANCIEN)
     {
-        return (long long)((random + PROBA_SURVIE_ADULTE) * nb);
+        return (entier)((random + PROBA_SURVIE_ADULTE) * nb);
     }
     else
     {
         double age_anciennete = age - MIN_AGE_ANCIEN;
         double proba = PROBA_SURVIE_ADULTE - age_anciennete * PROBA_PAR_MOIS_ANCIENNETE;
-        return (long long)((random + proba) * nb);
+        return (entier)((random + proba) * nb);
     }
 }
 
@@ -408,7 +410,7 @@ void print_simu(simu* s)
 {
     int mois = s->temps % 12;
     printf("\n=== mois num .%3d (%2d ans et %2d mois) ===\n", s->temps, s->temps / 12, mois);
-    printf("e = \t%d \t porte mois s. = %d\nf = \t%d\nm = \t%d\n________\nT = \t%12lld\t",
+    printf("e = \t%d \t porte mois s. = %d\nf = \t%d\nm = \t%d\n________\nT = \t%12llu\t",
             s->nb_enfant ,
             s->nb_porte_mois_suivant,
             s->nb_femelle,
@@ -424,10 +426,10 @@ void print_simu(simu* s)
 /// @param s simulation a afficher
 void print_simu_simple(simu* s)
 {
-    long long total = s->nb_enfant + s->nb_femelle + s->nb_femelle;
-    printf("%3d, %20lld ", s->temps, total);
+    entier total = s->nb_enfant + s->nb_femelle + s->nb_femelle;
+    printf("%3d, %20llu ", s->temps, total);
     print_mois(s->temps);
-    printf("\t(%10lld Mds)", total / 1000000000);
+    printf("\t(%10llu Mds)", total / 1000000000);
     printf("\n");
 }
 

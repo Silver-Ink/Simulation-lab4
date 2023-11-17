@@ -8,6 +8,7 @@
 #include <time.h>
 #include "mt19937ar.h"
 
+
 #define PI_2 2*3.1415926
 
 // Probabilités
@@ -41,33 +42,34 @@ double proba_reproduction_par_mois[12] =
 #define MIN_ENFANT_PAR_PORTE 3.
 #define MAX_ENFANT_PAR_PORTE 7. // exclus
 
+typedef  unsigned long long entier;
 
 typedef struct simu
 {
     // méta données
     int temps;
 
-    long long nb_femelle;
-    long long nb_male;
-    long long nb_enfant;
-    long long nb_porte_mois_suivant;
+    entier nb_femelle;
+    entier nb_male;
+    entier nb_enfant;
+    entier nb_porte_mois_suivant;
 
 
     // lapins ne pouvant pas encore se reproduire, leur sexe est choisis au passage adulte
-    long long lapin_enfant[MAX_MATURITE_SEXUELLE];
+    entier lapin_enfant[MAX_MATURITE_SEXUELLE];
 
-    long long lapin_femelle[MAX_AGE_ADULTE];
-    long long lapin_male[MAX_AGE_ADULTE];
+    entier lapin_femelle[MAX_AGE_ADULTE];
+    entier lapin_male[MAX_AGE_ADULTE];
 
 
 
 } simu;
 
 void init_simu(simu* s, int nb_femelle, int nb_male, int nb_enfant, int nb_porte);
-long long get_total_lapin(simu* s);
+entier get_total_lapin(simu* s);
 int mois_suivant(simu* s);
 int veillir_lapin(int age);
-long long veillir_groupe_lapin(int age, long long nb);
+entier veillir_groupe_lapin(int age, entier nb);
 simu simulation(int max_temps);
 double gen_rand_gaussienne();
 
