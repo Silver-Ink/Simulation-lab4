@@ -16,7 +16,8 @@
 #define PROBA_SURVIE_ENFANT 0.9162324528   //Proba de survie par mois
 #define PROBA_SURVIE_ADULTE 0.9583245286   //Proba de survie par mois
 #define PROBA_NAISSANCE 1.
-#define ECART_TYPE 6.
+#define ECART_TYPE 100.
+#define ORDRE_GRANDEUR 1000000000
 
 #define MAX_SIMU_COMPLETE 1000
 
@@ -24,6 +25,7 @@ double proba_reproduction_par_mois[12] =
 //{ .6 , .6 , .6 , .6 , .6 , .6 , .6 , .6 , .6 , .6 , .6 , .6 };
 { .03, .02, .37, .69, .92, .89, .82, .75, .48, .32, .09, .03};
 // J    F    M    A    M    Jn   Jl   A    S    O    N    D
+
 
 #define age_adulte(index) (index+MIN_MATURITE_SEXUELLE)
 #define MAX_NB_MOIS 12*20
@@ -71,13 +73,13 @@ int mois_suivant(simu* s);
 int veillir_lapin(int age);
 entier veillir_groupe_lapin(int age, entier nb);
 simu simulation(int max_temps);
-double gen_rand_gaussienne();
-
+double gen_rand_gaussienne(double moyenne, double ecart_type);
 
 
 // fonctions de test
 int veillir_lapin_test();
 void nombre_de_reproduction_par_an_test(int nb_exp);
+entier test_moyenne(int nb_simu, int t);
 
 
 // fonctions d'affichage
