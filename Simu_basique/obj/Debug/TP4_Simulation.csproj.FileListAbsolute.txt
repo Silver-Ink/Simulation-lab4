@@ -1,0 +1,7 @@
+C:\Users\marti\Desktop\C#\simu\TP4_Simulation\bin\Debug\TP4_Simulation.exe.config
+C:\Users\marti\Desktop\C#\simu\TP4_Simulation\bin\Debug\TP4_Simulation.exe
+C:\Users\marti\Desktop\C#\simu\TP4_Simulation\bin\Debug\TP4_Simulation.pdb
+C:\Users\marti\Desktop\C#\simu\TP4_Simulation\obj\Debug\TP4_Simulation.csproj.AssemblyReference.cache
+C:\Users\marti\Desktop\C#\simu\TP4_Simulation\obj\Debug\TP4_Simulation.csproj.CoreCompileInputs.cache
+C:\Users\marti\Desktop\C#\simu\TP4_Simulation\obj\Debug\TP4_Simulation.exe
+C:\Users\marti\Desktop\C#\simu\TP4_Simulation\obj\Debug\TP4_Simulation.pdb
